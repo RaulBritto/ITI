@@ -1,4 +1,3 @@
-#include "huff.h"
 
 void Usage(){
 	printf("Usage: ./ Input_File Output_file \n");
@@ -70,4 +69,19 @@ void FrequencyCounter(char *input_file){
 	printTable(frequency_table);
 
 	fclose(file);
+}
+
+// auxiliar do remove zero
+int countZero(unsigned int v[], unsigned int length){
+
+	int cont = 0;
+	
+	//cout << "Contexto " << context << endl;
+	for(int i = 0; i < length; i++){
+		if(v[i] != 0){
+			cont++;
+		} 
+	}	
+
+	return cont;
 }
