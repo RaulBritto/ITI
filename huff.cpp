@@ -8,7 +8,7 @@
 #include <vector>
 #include <algorithm>
 
-
+#include "listaBits.h"
 #include "huffman.h"
 #include "util.h"
 
@@ -58,8 +58,13 @@ void FrequencyCounterContext1(char *input_file, unsigned int frequency_table[][2
 
 void codifyData(char *input_file, char *output_file, treeVector *treeList){
 	FILE *file, *fileOut;
-	char c, first_character, buffer[2];
+	char c, first_character, buffer[2], aux[8];
 	int i = 0, j = 0;
+	unsigned int frequency_table[256][256];
+
+	for(i=0; i < 256; i++)
+		for(j=0; j < 256; j++)
+			frequency_table[i][j] = 0;
 
 	file = fopen(input_file, "r");
 	if(file == NULL){
@@ -82,8 +87,28 @@ void codifyData(char *input_file, char *output_file, treeVector *treeList){
 
 	buffer[0] = first_character;
 	//printf("buffer = [%c][ ]\n", buffer[0] );
+	byteToChar((int)first_character, aux);
+	//ExibirBits(first_character);
+	for(i=0; i< 256 ; i++){
+		if (treeList[i].p != NULL ){
+			for(j=0; j< ((*(treeList[i].p)).size()) ; j++){
+				//if ((*(treeList[i].p))[j] != NULL) {
+					if ( (*(treeList[i].p))[j].leaf == true ){
+						cout << "contexto= " << (char)i << "valor= " << (*(treeList[i].p))[j].value << "frequencia= " << (*(treeList[i].p))[j].frequency << endl;
+						frequency_table[i][(int)(*(treeList[i].p))[j].value] = (*(treeList[i].p))[j].frequency;
+					}
+				//}
+			}
+		}	
+	}
 
-	fwrite(&first_character, sizeof(char), 1, fileOut);
+	for(i=0; i< 256; i++){
+		for(j=0; j< 256; j++){
+			fwrite(&frequency_table[i][j], sizeof(unsigned int), 1, fileOut);
+		}
+	}
+	
+	fwrite(aux, sizeof(char), 8, fileOut);
 	while(!feof(file)){
 		fscanf(file,"%c", &c);
 		buffer[1] = c;
@@ -97,6 +122,8 @@ void codifyData(char *input_file, char *output_file, treeVector *treeList){
 		//printf("Contexto [%c][%c] = %d\n",  buffer[0], buffer[1] ,frequency_table[ (int) buffer[0] ][(int) buffer[1]] );
 		swapChar(buffer);
 	}
+	fclose(file);
+	fclose(fileOut);
 }
 
 void insertionSort(huffTree *array, unsigned int  length){
@@ -286,9 +313,6 @@ void CompressFile(char *name_input, char *name_output){
 			// plota a lista apos removido os zeros
 			vector<NO> root;			
 			buildHuffTree(list, list_length, root);
-			if(i == 122) {
-				//printVector(root);
-			}
 			codifyTree(root);
 
 			/*
@@ -311,11 +335,12 @@ void CompressFile(char *name_input, char *name_output){
 		
 	}
 	
-	codifyData(name_input, name_output, treeList);
+	//codifyData(name_input, name_output, treeList);
 	//cout << "tamanho " << (*(treeList[122].p))[0].frequency << endl;
-	
-	//printTree(*(treeList[65].p));
-
+	for(int i = 0; i < 256; i++){
+		if (treeList[i].p != NULL )
+			printTree(*(treeList[i].p));
+	}
 	/*Imprimindo arvore*/
 	//for(int i=0; i < 1; i++){
 		//cout << "Karai: " << (*treeList[122].p)[0].frequency << endl;	
