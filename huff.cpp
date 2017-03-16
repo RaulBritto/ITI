@@ -52,6 +52,51 @@ void FrequencyCounterContext1(char *input_file, unsigned int frequency_table[][2
 		//printf("Contexto [%c][%c] = %d\n",  buffer[0], buffer[1] ,frequency_table[ (int) buffer[0] ][(int) buffer[1]] );
 		swapChar(buffer);
 	}
+
+	PrintTable2(frequency_table);
+}
+
+void codifyData(char *input_file, char *output_file, treeVector *treeList){
+	FILE *file, *fileOut;
+	char c, first_character, buffer[2];
+	int i = 0, j = 0;
+
+	file = fopen(input_file, "r");
+	if(file == NULL){
+		printf("Error ao ler arquivo!\n");
+		exit(1);
+	}
+
+	fileOut = fopen(output_file, "w");
+	if(fileOut == NULL){
+		printf("Error ao ler arquivo!\n");
+		exit(1);
+	}
+
+
+	fscanf(file,"%c",&first_character);
+	//printf("Primeiro caracter: %c\n", first_character );
+	if(c == EOF){
+		printf("Nao foi possivel fazer a compactacao. Arquivo muito pequeno.\n");
+	}
+
+	buffer[0] = first_character;
+	//printf("buffer = [%c][ ]\n", buffer[0] );
+
+	fwrite(&first_character, sizeof(char), 1, fileOut);
+	while(!feof(file)){
+		fscanf(file,"%c", &c);
+		buffer[1] = c;
+		for(i=0; i< ((*(treeList[(int)buffer[0]].p)).size()) ; i++){
+			if ( (*(treeList[(int)buffer[0]].p))[i].leaf == true && 
+				(*(treeList[(int)buffer[0]].p))[i].value == c ){
+				fwrite(&(*(treeList[buffer[0]].p))[i].code, sizeof(char), strlen((*(treeList[buffer[0]].p))[i].code), fileOut);
+			}
+		}
+		//printf("buffer = [%c][%c]\n", buffer[0], buffer[1] );
+		//printf("Contexto [%c][%c] = %d\n",  buffer[0], buffer[1] ,frequency_table[ (int) buffer[0] ][(int) buffer[1]] );
+		swapChar(buffer);
+	}
 }
 
 void insertionSort(huffTree *array, unsigned int  length){
@@ -266,10 +311,10 @@ void CompressFile(char *name_input, char *name_output){
 		
 	}
 	
-
+	codifyData(name_input, name_output, treeList);
 	//cout << "tamanho " << (*(treeList[122].p))[0].frequency << endl;
 	
-	printTree(*(treeList[122].p));
+	//printTree(*(treeList[65].p));
 
 	/*Imprimindo arvore*/
 	//for(int i=0; i < 1; i++){
