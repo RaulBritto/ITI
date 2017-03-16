@@ -1,6 +1,7 @@
+using namespace std;
 
 void Usage(){
-	printf("Usage: ./ Input_File Output_file \n");
+	cout << "Usage: ./ Input_File Output_file \n" << endl;
 	exit(1);
 }
 
@@ -74,6 +75,8 @@ void FrequencyCounter(char *input_file){
 // auxiliar do remove zero
 int countZero(unsigned int v[], unsigned int length){
 
+	//if(v == NULL) return -1;
+
 	int cont = 0;
 	
 	//cout << "Contexto " << context << endl;
@@ -85,3 +88,19 @@ int countZero(unsigned int v[], unsigned int length){
 
 	return cont;
 }
+/*
+void printTree(huffTree *root){
+
+	if(root == NULL) {
+		cout << "Folha" << endl;
+		return;
+	}
+
+	if(root != NULL){
+		printTree(root->right);
+		cout << " Freq: " << root->frequency << endl;
+		printTree (root->left);
+	}
+
+}
+*/
